@@ -1,9 +1,18 @@
-''' Demonstrates how to subscribe to and handle data from gaze and event streams '''
+try:
+    import RPi.GPIO as GPIO
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup((3, 5, 7, 8, 10, 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 24, 25, 26, 29, 31, 32, 33, 35, 36, 37, 38, 40), GPIO.OUT)
+    pi = True
+except ModuleNotFoundError: 
+    pi = False
 
 import time
 
 import adhawkapi
 import adhawkapi.frontend
+lastBlink = 0
+moveMode = False
+direction = None # null or 'left' or 'right' or 'forward' or 'backward'
 
 
 class FrontendData:
@@ -35,36 +44,61 @@ class FrontendData:
     def _handle_et_data(et_data: adhawkapi.EyeTrackingStreamData):
         ''' Handles the latest et data '''
         if et_data.gaze is not None:
-            xvec, yvec, zvec, vergence = et_data.gaze
-            print(f'Gaze={xvec:.2f},y={yvec:.2f},z={zvec:.2f},vergence={vergence:.2f}')
+            xvec, yvec, zvec, v = et_data.gaze
+            # print(f'Gaze: x={xvec:.2f}, y={yvec:.2f}, z={zvec:.2f}', end="\r")
 
-        if et_data.eye_center is not None:
-            if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
-                rxvec, ryvec, rzvec, lxvec, lyvec, lzvec = et_data.eye_center
-                print(f'Eye center: Left=(x={lxvec:.2f},y={lyvec:.2f},z={lzvec:.2f}) '
-                      f'Right=(x={rxvec:.2f},y={ryvec:.2f},z={rzvec:.2f})')
+            if moveMode:
+                x = xvec
+                y = yvec
+                if -2 <= x <= 2 and -2 <= y <= 2:
+                    direction = None
+                else:
+                    abx = abs(x)
+                    aby = abs(y)
+                    if abx > aby: 
+                        if x < 0:
+                            direction = "left"
+                        else:
+                            direction = "right"
+                    else:
+                        if y < 0:
+                            direction = "backwards"
+                        else:
+                            direction = "forwards"
+                print(direction)
+        # if et_data.eye_center is not None:
+        #     if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
+        #         rxvec, ryvec, rzvec, lxvec, lyvec, lzvec = et_data.eye_center
+        #         print(f'Eye center: Left=(x={lxvec:.2f},y={lyvec:.2f},z={lzvec:.2f}) '
+        #               f'Right=(x={rxvec:.2f},y={ryvec:.2f},z={rzvec:.2f})')
 
-        if et_data.pupil_diameter is not None:
-            if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
-                rdiameter, ldiameter = et_data.pupil_diameter
-                print(f'Pupil diameter: Left={ldiameter:.2f} Right={rdiameter:.2f}')
+        # if et_data.pupil_diameter is not None:
+        #     if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
+        #         rdiameter, ldiameter = et_data.pupil_diameter
+        #         print(f'Pupil diameter: Left={ldiameter:.2f} Right={rdiameter:.2f}')
 
-        if et_data.imu_quaternion is not None:
-            if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
-                x, y, z, w = et_data.imu_quaternion
-                print(f'IMU: x={x:.2f},y={y:.2f},z={z:.2f},w={w:.2f}')
+        # if et_data.imu_quaternion is not None:
+        #     if et_data.eye_mask == adhawkapi.EyeMask.BINOCULAR:
+        #         x, y, z, w = et_data.imu_quaternion
+        #         print(f'IMU: x={x:.2f},y={y:.2f},z={z:.2f},w={w:.2f}')
         
     @staticmethod
     def _handle_events(event_type, timestamp, *args):
+        global lastBlink, moveMode
         if event_type == adhawkapi.Events.BLINK:
             duration = args[0]
-            print(f'Got blink: {timestamp} {duration}')
-        if event_type == adhawkapi.Events.EYE_CLOSED:
-            eye_idx = args[0]
-            print(f'Eye Close: {timestamp} {eye_idx}')
-        if event_type == adhawkapi.Events.EYE_OPENED:
-            eye_idx = args[0]
-            print(f'Eye Open: {timestamp} {eye_idx}')
+            print(f'Got blink: {timestamp} {duration}, diff {timestamp - lastBlink}')
+            if (timestamp - lastBlink < 1):
+                print(f"Got double-blink")
+                moveMode = not moveMode
+            lastBlink = timestamp
+            
+        # if event_type == adhawkapi.Events.EYE_CLOSED:
+        #     eye_idx = args[0]
+        #     print(f'Eye Close: {timestamp} {eye_idx}')
+        # if event_type == adhawkapi.Events.EYE_OPENED:
+        #     eye_idx = args[0]
+        #     print(f'Eye Open: {timestamp} {eye_idx}')
 
     def _handle_tracker_connect(self):
         print("Tracker connected")
