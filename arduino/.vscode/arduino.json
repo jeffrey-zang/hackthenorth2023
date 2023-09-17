@@ -1,0 +1,6 @@
+{
+    "board": "arduino:avr:uno",
+    "programmer": "avrisp",
+    "sketch": "arduino.ino",
+    "port": "/dev/tty.usbserial-1410"
+}
