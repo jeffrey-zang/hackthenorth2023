@@ -1,7 +1,7 @@
 # Ticky tacky toey
 <table>
   <tr>
-    <td></td>
+    <td>X</td>
     <td> </td>
     <td>o</td>
   </tr>
