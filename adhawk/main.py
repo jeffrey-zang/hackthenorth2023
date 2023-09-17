@@ -90,13 +90,12 @@ def main():
     try:
         while True:
             # write(f"{direction},{int(moveMode)}")
-            print(x, y)
             
-            s.create_oval((500+x)+15, (500+y)+15, (500+x)-15, (500+y)-15, fill = '#000')
+            s.create_oval((500+x*100)+15, (500+(-y)*100)+15, (500+x*100)-15, (500+(-y)*100)-15, fill = '#000')
             s.update()
             time.sleep(1)
     except (KeyboardInterrupt, SystemExit):
         frontend.shutdown()
-
+ 
 if __name__ == '__main__':
     main()
