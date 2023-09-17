@@ -48,8 +48,6 @@ void loop()
     moveMode = true;
   }
 
-  Serial.print(direction);
-
   // MOTION SENSOR
 
   // Clears the trigPin
@@ -69,45 +67,12 @@ void loop()
   // Serial.println(distance);
 
   // Stop Wheels if Detect something with Motion sensor
-  //  if (distance < 50 or not moveMode){
-  if (not moveMode)
-  { // delete after implementing motion thing
-    digitalWrite(7, LOW);
-    digitalWrite(6, LOW);
-    digitalWrite(5, LOW);
-    digitalWrite(4, LOW);
-  }
-  else
-  {
-    if (direction.equals("f"))
-    {
-      digitalWrite(7, HIGH);
-      digitalWrite(6, LOW);
-      digitalWrite(5, HIGH);
-      digitalWrite(4, LOW);
-    }
-    else if (direction.equals("b"))
-    {
-      digitalWrite(7, LOW);
-      digitalWrite(6, HIGH);
-      digitalWrite(5, LOW);
-      digitalWrite(4, HIGH);
-    }
-    else if (direction.equals("l"))
-    {
-      digitalWrite(7, HIGH);
-      digitalWrite(6, LOW);
-      digitalWrite(5, LOW);
-      digitalWrite(4, HIGH);
-    }
-    else if (direction.equals("r"))
-    {
-      digitalWrite(7, LOW);
-      digitalWrite(6, HIGH);
-      digitalWrite(5, HIGH);
-      digitalWrite(4, LOW);
-    }
-  }
+  //  if (distance < 50){
+  //    digitalWrite(7, LOW);
+  //    digitalWrite(6, LOW);
+  //    digitalWrite(5, LOW);
+  //    digitalWrite(4, LOW);
+  //  }
 
   // DC MOTORS -has to be changed for adhawk + mounted movement
 
