@@ -1,9 +1,9 @@
 # Ticky tacky toey
 <table>
   <tr>
+    <td></td>
     <td> </td>
-    <td> </td>
-    <td> </td>
+    <td>o</td>
   </tr>
     <tr>
     <td> </td>
