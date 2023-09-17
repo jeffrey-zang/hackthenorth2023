@@ -36,7 +36,7 @@ void loop()
 
   String input = Serial.readString();
   String direction = input.substring(0, input.indexOf(","));
-  String rawMoveMode = input.substring(input.indexOf(","));
+  String rawMoveMode = input.substring(input.indexOf(",") + 1);
 
   bool moveMode;
   if (rawMoveMode.equals("0"))
@@ -47,6 +47,8 @@ void loop()
   {
     moveMode = true;
   }
+
+  Serial.print(direction + String(moveMode) + rawMoveMode);
 
   // MOTION SENSOR
 
@@ -61,18 +63,50 @@ void loop()
   duration = pulseIn(echoPin, HIGH);
   // Calculating the distance
   distance = duration * 0.034 / 2;*/
-
   // Prints the distance on the Serial Monitor
   // Serial.print("Distance: ");
   // Serial.println(distance);
 
   // Stop Wheels if Detect something with Motion sensor
-  //  if (distance < 50){
-  //    digitalWrite(7, LOW);
-  //    digitalWrite(6, LOW);
-  //    digitalWrite(5, LOW);
-  //    digitalWrite(4, LOW);
-  //  }
+  //  if (distance < 50 or not moveMode or direction.equals("None")){
+  if (not moveMode or direction.equals("None"))
+  { // delete after implementing motion thing
+    digitalWrite(7, LOW);
+    digitalWrite(6, LOW);
+    digitalWrite(5, LOW);
+    digitalWrite(4, LOW);
+  }
+  else
+  {
+    if (direction.equals("f"))
+    {
+      digitalWrite(7, HIGH);
+      digitalWrite(6, LOW);
+      digitalWrite(5, HIGH);
+      digitalWrite(4, LOW);
+    }
+    else if (direction.equals("b"))
+    {
+      digitalWrite(7, LOW);
+      digitalWrite(6, HIGH);
+      digitalWrite(5, LOW);
+      digitalWrite(4, HIGH);
+    }
+    else if (direction.equals("l"))
+    {
+      digitalWrite(7, HIGH);
+      digitalWrite(6, LOW);
+      digitalWrite(5, LOW);
+      digitalWrite(4, HIGH);
+    }
+    else if (direction.equals("r"))
+    {
+      digitalWrite(7, LOW);
+      digitalWrite(6, HIGH);
+      digitalWrite(5, HIGH);
+      digitalWrite(4, LOW);
+    }
+  }
 
   // DC MOTORS -has to be changed for adhawk + mounted movement
 

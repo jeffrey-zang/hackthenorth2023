@@ -1,6 +1,6 @@
 import time
 
-# from arduino import write
+from arduino import write
 import adhawkapi
 import adhawkapi.frontend
 
@@ -42,7 +42,7 @@ class FrontendData:
 
     @staticmethod
     def _handle_et_data(et_data: adhawkapi.EyeTrackingStreamData):
-        global x, y
+        global x, y, direction
         if et_data.gaze is not None:
             xvec, yvec, zvec, v = et_data.gaze
 
@@ -64,7 +64,7 @@ class FrontendData:
                             direction = "b"
                         else:
                             direction = "f"
-                print(direction)
+                # print(direction)
 
     @staticmethod
     def _handle_events(event_type, timestamp, *args):
@@ -101,7 +101,7 @@ def main():
     frontend = FrontendData()
     try:
         while True:
-            # write(f"{direction},{int(moveMode)}")
+            write(f"{direction},{int(moveMode)}")
 
             bruh = s.create_oval(
                 (500 + x * 97) + 15,
